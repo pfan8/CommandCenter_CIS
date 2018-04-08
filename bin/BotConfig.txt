@@ -1,0 +1,110 @@
+{
+    "Bot Info" :
+    {
+        "BotName"                   : "DiligentBot",
+        "Authors"                   : "pfan8",
+        "PrintInfoOnStart"          : true
+    },
+
+    "BWAPI" : 
+    {
+        "SetLocalSpeed"             : 5,
+        "SetFrameSkip"              : 0,
+        "UserInput"                 : true,
+        "CompleteMapInformation"    : false
+    },
+    
+    "SC2API" :
+    {
+        "BotRace"                   : "Terran",
+        "EnemyDifficulty"           : 1,
+        "EnemyRace"                 : "Random",
+        "MapFile"                   : "InterloperLE.SC2Map",
+        "StepSize"                  : 5
+
+    },
+        
+    "Micro" :
+    {
+        "KiteWithRangedUnits"       : false,
+        "ScoutHarassEnemy"          : true
+    },
+    
+    "Macro" :
+    {
+        "WorkersPerRefinery"        : 3,
+        "BuildingSpacing"           : 0,
+        "PylonSpacing"              : 3
+    },
+
+    "Debug" :
+    {
+        "DrawGameInfo"              : true, 
+        "DrawProductionInfo"        : true, 
+        "DrawBaseLocationInfo"      : true,
+        "DrawTileInfo"              : false,
+        "DrawWalkableSectors"       : false,
+        "DrawScoutInfo"             : true,
+        "DrawEnemyUnitInfo"         : false,
+        "DrawResourceInfo"          : false,
+        "DrawUnitTargetInfo"        : false,
+        "DrawLastSeenTileInfo"      : false,
+        "DrawSquadInfo"             : false,
+        "DrawWorkerInfo"            : true,
+        "DrawBuildingInfo"          : true,
+        "DrawReservedBuildingTiles" : true
+    },
+    
+    "Modules" :
+    {
+        "UseAutoObserver"           : false
+    },
+    
+    "SC2API Strategy" :
+    {
+        "Protoss"                   : "Protoss_ZealotRush",
+        "Terran"                    : "Terran_2MarauderArmy",
+        "Zerg"                      : "Zerg_2HatchRoach",
+        
+        "ScoutHarassEnemy"          : true,
+        
+        "Strategies" :
+        {
+            "Protoss_ZealotRush"    : 
+            { 
+                "Race"              : "Protoss", 
+                "OpeningBuildOrder" : ["Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Pylon", "Probe", "Gateway", "Probe", "Gateway", "Pylon", "Probe", "Zealot", "Zealot", "Pylon", "Zealot", "Zealot", "Pylon", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot"],
+                "ScoutCondition"    : [ ["Self", "Pylon"], ">", [ 0 ] ],
+                "AttackCondition"   : [ ["Self", "Zealot"], ">=", [ 8 ] ]
+            },
+            "Terran_MarineRush"     : 
+            { 
+                "Race"              : "Terran",  
+                "OpeningBuildOrder" : ["SCV", "SCV", "SupplyDepot", "SCV", "SCV", "Barracks", "Barracks", "Barracks", "Barracks", "SupplyDepot", "SupplyDepot", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine"],
+                "ScoutCondition"    : [ ["Self", "SupplyDepot"], ">", [ 0 ] ],
+                "AttackCondition"   : [ ["Self", "Marine"], ">=", [ 8 ] ]
+            },
+            "Terran_2MarauderArmy"     : 
+            { 
+                "Race"              : "Terran",  
+                "OpeningBuildOrder" : ["SupplyDepot", "SCV", "SCV", "SupplyDepot", "SCV", "SCV", "SupplyDepot", "Barracks", "Refinery", "Marine", "Marine", "Marine", "Marine", "Marine", "BarracksTechLab", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marine", "Marine", "Marine", "Marine", "Marine"],
+                "ScoutCondition"    : [ ["Self", "SupplyDepot"], ">", [ 0 ] ],
+                "AttackCondition"   : [ ["Self", "Marauder"], ">=", [ 5 ] ]
+            },
+            "Zerg_ZerglingRush"     : 
+            { 
+                "Race"              : "Zerg",    
+                "OpeningBuildOrder" : ["SpawningPool", "Drone", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling"], 
+                "ScoutCondition"    : [ ["GameFrame"], ">=", [ 100 ] ],
+                "AttackCondition"   : [ ["Self", "Zergling"], ">", [ 0 ] ]    
+            },
+            "Zerg_2HatchRoach"      : 
+            { 
+                "Race"              : "Zerg",    
+                "OpeningBuildOrder" : ["SpawningPool", "Drone", "Overlord", "Drone", "Drone", "Extractor", "Drone", "Drone", "Hatchery", "Drone", "Overlord", "Drone", "RoachWarren", "Drone", "Drone", "Drone", "Drone", "Roach", "Overlord", "Roach", "Roach", "Roach", "Roach", "Overlord", "Roach", "Roach", "Roach", "Roach", "Roach", "Roach", "Roach"],
+                "ScoutCondition"    : [ ["self", "SpawningPool"], ">=", [ 1 ] ],
+                "AttackCondition"   : [ [["Self", "Roach"], ">=", [ 12 ]], "AND", [["Self", "Overlord"], ">=", [ 1 ]] ]    
+            }
+        }
+    }
+}
