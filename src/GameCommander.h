@@ -45,4 +45,7 @@ public:
 
     void onUnitCreate(const Unit & unit);
     void onUnitDestroy(const Unit & unit);
+
+	void expand(const UnitType & base_type);
+	void buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded);
 };

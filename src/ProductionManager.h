@@ -33,6 +33,9 @@ public:
     void    onStart();
     void    onFrame();
     void    onUnitDestroy(const Unit & unit);
+	void	expand(sc2::UNIT_TYPEID type_id);
+	void	buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded);
+
     void    drawProductionInformation();
 
     Unit getProducer(const MetaType & type, CCPosition closestTo = CCPosition(0, 0));

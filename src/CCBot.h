@@ -72,4 +72,9 @@ public:
     Unit GetUnit(const CCUnitID & tag) const;
     const std::vector<Unit> & GetUnits() const;
     const std::vector<CCPosition> & GetStartLocations() const;
+	void expand(const UnitType & base_type);
+	void buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded);
+	void activateExpandState(sc2::Point2DI exbase_pos);
+	void validateBM(sc2::Point2DI exbase_pos, BMBuildType type);
+	void resetExpandState();
 };

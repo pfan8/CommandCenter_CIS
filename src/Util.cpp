@@ -207,6 +207,11 @@ bool Util::isBuilding(const sc2::UnitTypeID & type)
 	}
 }
 
+CCTilePosition Util::GetTilePosition(int x, int y)
+{
+	return CCTilePosition(x, y);
+}
+
 CCTilePosition Util::GetTilePosition(const CCPosition & pos)
 {
 #ifdef SC2API

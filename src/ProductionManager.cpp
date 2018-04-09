@@ -46,6 +46,64 @@ void ProductionManager::onUnitDestroy(const Unit & unit)
     // TODO: might have to re-do build order if a vital unit died
 }
 
+void ProductionManager::expand(sc2::UNIT_TYPEID type_id)
+{
+	MetaType base_type = MetaType(UnitType(type_id, m_bot), m_bot);
+	BuildOrderItem expand_base = BuildOrderItem(base_type, 0, false);
+	// this is the unit which can produce the currentItem
+	Unit producer = getProducer(expand_base.type);
+
+	// check to see if we can make it right now
+	bool canMake = canMakeNow(producer, expand_base.type);
+
+	// TODO: if it's a building and we can't make it yet, predict the worker movement to the location
+
+	// if we can make the current item
+	if (producer.isValid() && canMake)
+	{
+		// create it and remove it from the _queue
+		create(producer, expand_base);
+	}
+	//m_buildingManager.expand();
+}
+
+void ProductionManager::buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded)
+{
+	if (!bunker_builded) 
+	{
+		MetaType bunker_type = MetaType(UnitType(sc2::UNIT_TYPEID::TERRAN_BUNKER, m_bot), m_bot);
+		Unit bunker_producer = getProducer(bunker_type);
+		
+		// check to see if we can make it right now
+		bool canMake = canMakeNow(bunker_producer, bunker_type);
+
+		// TODO: if it's a building and we can't make it yet, predict the worker movement to the location
+
+		// if we can make the current item
+		if (bunker_producer.isValid() && canMake)
+		{
+			m_bot.validateBM(exbase_pos, BMBuildType::BUNKER);
+			m_buildingManager.addBuildingTask(UnitType(sc2::UNIT_TYPEID::TERRAN_BUNKER, m_bot), Util::GetTilePosition(exbase_pos.x, exbase_pos.y));
+		}
+	}
+
+	MetaType marine_type = MetaType(UnitType(sc2::UNIT_TYPEID::TERRAN_MARINE, m_bot), m_bot);
+	BuildOrderItem marine = BuildOrderItem(marine_type, 0, false);
+	Unit marine_producer = getProducer(marine_type);
+
+	// check to see if we can make it right now
+	bool canMake = canMakeNow(marine_producer, marine.type);
+
+	// TODO: if it's a building and we can't make it yet, predict the worker movement to the location
+
+	// if we can make the current item
+	if (marine_producer.isValid() && canMake)
+	{
+		m_bot.validateBM(exbase_pos, BMBuildType::MARINE);
+		create(marine_producer, marine);
+	}
+}
+
 void ProductionManager::manageBuildOrderQueue()
 {
     // if there is nothing in the queue, oh well
@@ -247,7 +305,7 @@ bool ProductionManager::canMakeNow(const Unit & producer, const MetaType & type)
 	if (!producer.isValid())
 		return false;
 	sc2::UnitTypeID sc2_type = type.getUnitType().getAPIUnitType();
-	const sc2::Point2DI point = m_buildingManager.getBuildPlacer().getBuildLocationForType(sc2_type);
+	//const sc2::Point2DI point = m_buildingManager.getBuildPlacer().getBuildLocationForType(sc2_type);
 	if (!meetsReservedResources(type))
 		return false;
 

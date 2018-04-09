@@ -174,6 +174,12 @@ bool Unit::isMaxHealthed() const
 	return m_unit->health == m_unit->health_max;
 }
 
+bool Unit::isMaxCargo() const
+{
+	BOT_ASSERT(isValid(), "Unit is not valid");
+	return m_unit->cargo_space_taken == m_unit->cargo_space_max;
+}
+
 bool Unit::isCloaked() const
 {
     BOT_ASSERT(isValid(), "Unit is not valid");

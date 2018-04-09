@@ -23,6 +23,7 @@ namespace Util
     bool            IsProtoss(const CCRace & race);
     bool            IsTerran(const CCRace & race);
 	bool isBuilding(const sc2::UnitTypeID & type);
+	CCTilePosition GetTilePosition(int x, int y);
     CCPositionType  TileToPosition(float tile);
 
 #ifdef SC2API

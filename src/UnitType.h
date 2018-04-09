@@ -37,6 +37,7 @@ public:
     bool isValid() const;
     bool isBuilding() const;
     bool isCombatUnit() const;
+	bool isBaseBuilding() const;
     bool isSupplyProvider() const;
     bool isResourceDepot() const;
 	bool isSupplyDepot() const;

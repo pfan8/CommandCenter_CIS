@@ -174,24 +174,23 @@ CCTilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int buil
     return CCTilePosition(0, 0);
 }
 
-sc2::Point2DI BuildingPlacer::getBuildLocationForType(const sc2::UnitTypeID type) const
+sc2::Point2DI BuildingPlacer::getBuildLocationForType(const sc2::UnitTypeID type, sc2::Point2DI desired_loc) const
 {
 	if (build_location_cache_.find(type) != build_location_cache_.end())
 	{
 		return build_location_cache_.at(type);
 	}
 
-	sc2::Point2DI desired_loc;
 	if (Util::IsRefineryType(type))
 	{
 		desired_loc = getRefineryPosition();
 	}
 
-	//else if (type == sc2::UNIT_TYPEID::TERRAN_BARRACKS)
-	//{
-	//	desired_loc = m_bot.GetProxyManager().GetProxyLocation();
-	//}
-
+	else if (Util::IsTownHallType(type))
+	{
+		desired_loc = m_bot.Bases().getNextExpansion(Players::Self);
+		m_bot.activateExpandState(desired_loc);
+	}
 
 	// Make a wall if necessary.
 	else if (type == sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT && m_bot.UnitInfo().getNumDepots(sc2::Unit::Alliance::Self) < 3)
@@ -203,17 +202,16 @@ sc2::Point2DI BuildingPlacer::getBuildLocationForType(const sc2::UnitTypeID type
 		}
 	}
 
-	// Find the next expansion location. 
-	else if (Util::IsTownHallType(type))
-	{
-		CCTilePosition ccpos = m_bot.Bases().getNextExpansion(sc2::Unit::Alliance::Self);
-		const sc2::Point2D next_expansion_location = sc2::Point2D(ccpos.x, ccpos.y);
-		desired_loc = Util::ToPoint2DI(next_expansion_location);
-	}
 	// If no special placement code is required, get a position somewhere in our starting base.
 	else
 	{
-		desired_loc = Util::ToPoint2DI(m_bot.GetStartLocation());
+		if (desired_loc == sc2::Point2DI(0, 0))
+		{
+			desired_loc = Util::ToPoint2DI(m_bot.GetStartLocation());
+		}
+		UnitType unit_type = UnitType(type, m_bot);
+		Building b = Building(unit_type, desired_loc);
+		desired_loc = getBuildLocationNear(b, m_bot.Config().BuildingSpacing);
 	}
 
 	// Return a "null" point if the desired_loc was not on the map. 
@@ -221,11 +219,8 @@ sc2::Point2DI BuildingPlacer::getBuildLocationForType(const sc2::UnitTypeID type
 	{
 		return sc2::Point2DI{ 0, 0 };
 	}
-	UnitType unit_type = UnitType(type, m_bot);
-	Building b = Building(unit_type, desired_loc);
-	//std::cout << "desired_loc2:" << desired_loc.x << " + " << desired_loc.y << std::endl;
-	build_location_cache_[type] = getBuildLocationNear(b, m_bot.Config().BuildingSpacing);
-	//build_location_cache_[type] = desired_loc;
+
+	build_location_cache_[type] = desired_loc;
 	return build_location_cache_[type];
 }
 
@@ -400,6 +395,13 @@ CCTilePosition BuildingPlacer::getRefineryPosition() const
         {
             continue;
         }
+		CCPosition testPosition = unit.getPosition();
+		if (!(canBuildHere(testPosition.x, testPosition.y, sc2::UNIT_TYPEID::TERRAN_REFINERY)
+			|| canBuildHere(testPosition.x, testPosition.y, sc2::UNIT_TYPEID::PROTOSS_ASSIMILATOR)
+			|| canBuildHere(testPosition.x, testPosition.y, sc2::UNIT_TYPEID::ZERG_EXTRACTOR)))
+		{
+			continue;
+		}
 
         CCPosition geyserPos(unit.getPosition());
 

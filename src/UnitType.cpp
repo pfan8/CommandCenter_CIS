@@ -110,6 +110,24 @@ bool UnitType::isCombatUnit() const
 #endif
 }
 
+bool UnitType::isBaseBuilding() const
+{
+	switch (m_type.ToType())
+	{
+	case sc2::UNIT_TYPEID::ZERG_HATCHERY: return true;
+	case sc2::UNIT_TYPEID::ZERG_LAIR: return true;
+	case sc2::UNIT_TYPEID::ZERG_HIVE: return true;
+	case sc2::UNIT_TYPEID::TERRAN_COMMANDCENTER: return true;
+	case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMAND: return true;
+		// There is no point in treating flying buildings like the building type they are supposed to be. 
+		// You can't train units from a flying building. 
+		// case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMANDFLYING  : return true;
+	case sc2::UNIT_TYPEID::TERRAN_PLANETARYFORTRESS: return true;
+	case sc2::UNIT_TYPEID::PROTOSS_NEXUS: return true;
+	default: return false;
+	}
+}
+
 bool UnitType::isSupplyProvider() const
 {
 	switch (m_type.ToType())

@@ -127,6 +127,16 @@ void GameCommander::onUnitDestroy(const Unit & unit)
     //_productionManager.onUnitDestroy(unit);
 }
 
+void GameCommander::expand(const UnitType & base_type)
+{
+	m_productionManager.expand(base_type.getAPIUnitType());
+}
+
+void GameCommander::buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded)
+{
+	m_productionManager.buildBunkerMarines(exbase_pos, bunker_builded);
+}
+
 
 void GameCommander::assignUnit(const Unit & unit, std::vector<Unit> & units)
 {

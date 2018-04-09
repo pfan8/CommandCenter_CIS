@@ -328,6 +328,12 @@ CCTilePosition BaseLocationManager::getNextExpansion(int player) const
             continue;
         }
 
+		// check base not occupied by player
+		if (base->isOccupiedByPlayer(Players::Self) || base->isOccupiedByPlayer(Players::Enemy))
+		{
+			continue;
+		}
+
         // get the tile position of the base
         auto tile = base->getDepotPosition();
         

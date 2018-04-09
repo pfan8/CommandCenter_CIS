@@ -238,6 +238,33 @@ const std::vector<CCPosition> & CCBot::GetStartLocations() const
     return m_baseLocations;
 }
 
+void CCBot::expand(const UnitType & base_type)
+{
+	m_gameCommander.expand(base_type);
+}
+
+void CCBot::buildBunkerMarines(sc2::Point2DI exbase_pos, bool bunker_builded)
+{
+
+	m_gameCommander.buildBunkerMarines(exbase_pos, bunker_builded);
+
+}
+
+void CCBot::activateExpandState(sc2::Point2DI exbase_pos)
+{
+	m_strategy.activateExpandState(exbase_pos);
+}
+
+void CCBot::validateBM(sc2::Point2DI exbase_pos, BMBuildType type)
+{
+	m_strategy.validateBM(exbase_pos, type);
+}
+
+void CCBot::resetExpandState()
+{
+	m_strategy.resetExpandState();
+}
+
 #ifdef SC2API
 void CCBot::OnError(const std::vector<sc2::ClientError> & client_errors, const std::vector<std::string> & protocol_errors)
 {

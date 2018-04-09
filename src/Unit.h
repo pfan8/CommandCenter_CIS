@@ -46,6 +46,7 @@ public:
     float getBuildPercentage() const;
     int getWeaponCooldown() const;
 	bool isMaxHealthed() const;
+	bool isMaxCargo() const;
     bool isCompleted() const;
     bool isBeingConstructed() const;
     bool isCloaked() const;

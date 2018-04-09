@@ -17,7 +17,7 @@
     "SC2API" :
     {
         "BotRace"                   : "Terran",
-        "EnemyDifficulty"           : 1,
+        "EnemyDifficulty"           : 3,
         "EnemyRace"                 : "Random",
         "MapFile"                   : "InterloperLE.SC2Map",
         "StepSize"                  : 5
@@ -72,14 +72,16 @@
         {
             "Protoss_ZealotRush"    : 
             { 
-                "Race"              : "Protoss", 
+                "Race"              : "Protoss",   
+                "ExpandBaseNum"     : 1,
                 "OpeningBuildOrder" : ["Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Pylon", "Probe", "Gateway", "Probe", "Gateway", "Pylon", "Probe", "Zealot", "Zealot", "Pylon", "Zealot", "Zealot", "Pylon", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot", "Zealot"],
                 "ScoutCondition"    : [ ["Self", "Pylon"], ">", [ 0 ] ],
                 "AttackCondition"   : [ ["Self", "Zealot"], ">=", [ 8 ] ]
             },
             "Terran_MarineRush"     : 
             { 
-                "Race"              : "Terran",  
+                "Race"              : "Terran",    
+                "ExpandBaseNum"     : 1,
                 "OpeningBuildOrder" : ["SCV", "SCV", "SupplyDepot", "SCV", "SCV", "Barracks", "Barracks", "Barracks", "Barracks", "SupplyDepot", "SupplyDepot", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine"],
                 "ScoutCondition"    : [ ["Self", "SupplyDepot"], ">", [ 0 ] ],
                 "AttackCondition"   : [ ["Self", "Marine"], ">=", [ 8 ] ]
@@ -87,20 +89,23 @@
             "Terran_2MarauderArmy"     : 
             { 
                 "Race"              : "Terran",  
-                "OpeningBuildOrder" : ["SupplyDepot", "SCV", "SCV", "SupplyDepot", "SCV", "SCV", "SupplyDepot", "Barracks", "Refinery", "Marine", "Marine", "Marine", "Marine", "Marine", "BarracksTechLab", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marine", "Marine", "Marine", "Marine", "Marine"],
+                "ExpandBaseNum"     : 1,
+                "OpeningBuildOrder" : ["SupplyDepot", "SCV", "SCV", "SupplyDepot", "SCV", "SCV", "SupplyDepot", "Barracks", "Refinery", "Refinery", "Marine", "Marine", "Marine", "Marine", "Marine", "BarracksTechLab", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marauder", "Marine", "Marine", "Marine", "Marine", "Marine"],
                 "ScoutCondition"    : [ ["Self", "SupplyDepot"], ">", [ 0 ] ],
                 "AttackCondition"   : [ ["Self", "Marauder"], ">=", [ 5 ] ]
             },
             "Zerg_ZerglingRush"     : 
             { 
                 "Race"              : "Zerg",    
+                "ExpandBaseNum"     : 1,  
                 "OpeningBuildOrder" : ["SpawningPool", "Drone", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling", "Zergling"], 
                 "ScoutCondition"    : [ ["GameFrame"], ">=", [ 100 ] ],
                 "AttackCondition"   : [ ["Self", "Zergling"], ">", [ 0 ] ]    
             },
             "Zerg_2HatchRoach"      : 
             { 
-                "Race"              : "Zerg",    
+                "Race"              : "Zerg",      
+                "ExpandBaseNum"     : 1,
                 "OpeningBuildOrder" : ["SpawningPool", "Drone", "Overlord", "Drone", "Drone", "Extractor", "Drone", "Drone", "Hatchery", "Drone", "Overlord", "Drone", "RoachWarren", "Drone", "Drone", "Drone", "Drone", "Roach", "Overlord", "Roach", "Roach", "Roach", "Roach", "Overlord", "Roach", "Roach", "Roach", "Roach", "Roach", "Roach", "Roach"],
                 "ScoutCondition"    : [ ["self", "SpawningPool"], ">=", [ 1 ] ],
                 "AttackCondition"   : [ [["Self", "Roach"], ">=", [ 12 ]], "AND", [["Self", "Overlord"], ">=", [ 1 ]] ]    

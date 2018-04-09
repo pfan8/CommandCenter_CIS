@@ -10,7 +10,7 @@ Strategy::Strategy()
 
 }
 
-Strategy::Strategy(const std::string & name, const CCRace & race, const BuildOrder & buildOrder, const Condition & scoutCondition, const Condition & attackCondition)
+Strategy::Strategy(const std::string & name, const CCRace & race, const BuildOrder & buildOrder, const Condition & scoutCondition, const Condition & attackCondition, const int expandNum = 0)
     : m_name            (name)
     , m_race            (race)
     , m_buildOrder      (buildOrder)
@@ -18,6 +18,7 @@ Strategy::Strategy(const std::string & name, const CCRace & race, const BuildOrd
     , m_losses          (0)
     , m_scoutCondition  (scoutCondition)
     , m_attackCondition (attackCondition)
+	, m_expandNum		(expandNum)
 {
 
 }
@@ -26,6 +27,7 @@ Strategy::Strategy(const std::string & name, const CCRace & race, const BuildOrd
 StrategyManager::StrategyManager(CCBot & bot)
 	: m_bot(bot)
 	, m_bases_safe(false)
+	, m_exbase_onbuild(false)
 {
 }
 
@@ -39,7 +41,10 @@ void StrategyManager::onFrame()
 	// Update variables that we will need later. 
 	m_bases_safe = areBasesSafe();
 	//RecalculateMacroGoal();
+	checkExpand();
+	checkExpandBunker();
 	HandleUnitAssignments();
+
 }
 
 bool StrategyManager::areBasesSafe()
@@ -82,15 +87,6 @@ bool StrategyManager::attackConditionIsMet() const
     return getCurrentStrategy().m_attackCondition.eval();
 }
 
-bool StrategyManager::ShouldExpandNow() const
-{
-	if (m_bot.Observation()->GetMinerals() > 400 && m_bases_safe)
-	{
-		return true;
-	}
-	return false;
-}
-
 // assigns units to various managers
 void StrategyManager::HandleUnitAssignments()
 {
@@ -118,8 +114,77 @@ void StrategyManager::HandleUnitAssignments()
 	}
 }
 
+void StrategyManager::checkExpand() const
+{
+	if (!m_exbase_onbuild)
+	{
+		auto & stratage = getCurrentStrategy();
+		UnitType base_type;
+		switch (stratage.m_race)
+		{
+		case sc2::Race::Terran:
+			base_type = UnitType(sc2::UNIT_TYPEID::TERRAN_COMMANDCENTER, m_bot);
+			break;
+		case sc2::Race::Zerg:
+			base_type = UnitType(sc2::UNIT_TYPEID::ZERG_HATCHERY, m_bot);
+			break;
+		case sc2::Race::Protoss:
+			base_type = UnitType(sc2::UNIT_TYPEID::PROTOSS_NEXUS, m_bot);
+			break;
+		default:
+			break;
+		}
+		if (m_bot.UnitInfo().getUnitTypeCount(Players::Self, base_type, false) < stratage.m_expandNum + 1
+			&& shouldExpandNow())
+		{
+			m_bot.expand(base_type);
+		}
+	}
+}
+
+void StrategyManager::checkExpandBunker()
+{
+	for (auto & bm : m_bunkerMarines)
+	{
+		if (bm.second.second > 0)
+		{
+			m_bot.buildBunkerMarines(bm.first, bm.second.first);
+		}
+		else if (bm.second.first && bm.second.second <= 0)
+		{
+			const auto & it = std::find(m_bunkerMarines.begin(), m_bunkerMarines.end(), bm);
+			m_bunkerMarines.erase(it);
+		}
+	}
+	std::vector<Unit> units = m_bot.GetUnits();
+	for (auto & bunker_unit : units)
+	{
+		if (bunker_unit.getType().getAPIUnitType() != sc2::UNIT_TYPEID::TERRAN_BUNKER)
+		{
+			continue;
+		}
+
+		for (auto & marine_unit : units)
+		{
+			if (bunker_unit.isMaxCargo())
+			{
+				break;
+			}
+
+			if (marine_unit.getType().getAPIUnitType() == sc2::UNIT_TYPEID::TERRAN_MARINE)
+			{
+				m_bot.Actions()->UnitCommand(marine_unit.getUnitPtr(), sc2::ABILITY_ID::SMART, bunker_unit.getUnitPtr());
+			}
+		}
+	}
+}
+
 bool StrategyManager::shouldExpandNow() const
 {
+	if (m_bot.Observation()->GetMinerals() > 400 && m_bases_safe)
+	{
+		return true;
+	}
     return false;
 }
 
@@ -218,8 +283,11 @@ void StrategyManager::readStrategyFile(const std::string & filename)
                 
                 BOT_ASSERT(val.count("Race") && val["Race"].is_string(), "Strategy is missing a Race string");
                 CCRace strategyRace = Util::GetRaceFromString(val["Race"].get<std::string>());
+
+				BOT_ASSERT(val.count("ExpandBaseNum") && val["ExpandBaseNum"].is_number(), "Strategy is missing a ExpandBaseNum number");
+				int expandBaseNum = val["ExpandBaseNum"];
                 
-                BOT_ASSERT(val.count("OpeningBuildOrder") && val["OpeningBuildOrder"].is_array(), "Strategy is missing an OpeningBuildOrder arrau");
+                BOT_ASSERT(val.count("OpeningBuildOrder") && val["OpeningBuildOrder"].is_array(), "Strategy is missing an OpeningBuildOrder array");
                 BuildOrder buildOrder;
                 const json & build = val["OpeningBuildOrder"];
                 for (size_t b(0); b < build.size(); b++)
@@ -242,8 +310,41 @@ void StrategyManager::readStrategyFile(const std::string & filename)
                 BOT_ASSERT(val.count("AttackCondition") && val["AttackCondition"].is_array(), "Strategy is missing an AttackCondition array");
                 Condition attackCondition(val["AttackCondition"], m_bot);
 
-                addStrategy(name, Strategy(name, strategyRace, buildOrder, scoutCondition, attackCondition));
+                addStrategy(name, Strategy(name, strategyRace, buildOrder, scoutCondition, attackCondition, expandBaseNum));
             }
         }
     }
+}
+
+void StrategyManager::activateExpandState(sc2::Point2DI exbase_position)
+{
+	BM new_bunker_marine(exbase_position, std::make_pair(false, 4));
+	m_bunkerMarines.push_back(new_bunker_marine);
+	m_exbase_onbuild = true;
+}
+
+void StrategyManager::resetExpandState()
+{
+	m_exbase_onbuild = false;
+}
+
+void StrategyManager::validateBM(sc2::Point2DI exbase_pos, BMBuildType type)
+{
+	for (auto & bm : m_bunkerMarines)
+	{
+		if (bm.first == exbase_pos)
+		{
+			switch (type)
+			{
+			case BMBuildType::BUNKER:
+				bm.second.first = true;
+				break;
+			case BMBuildType::MARINE:
+				bm.second.second--;
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }

@@ -36,7 +36,7 @@ public:
     // returns a build location near a building's desired location
     CCTilePosition getBuildLocationNear(const Building & b, int buildDist) const;
 
-	sc2::Point2DI getBuildLocationForType(const sc2::UnitTypeID type) const;
+	sc2::Point2DI getBuildLocationForType(const sc2::UnitTypeID type, sc2::Point2DI desired_loc = sc2::Point2DI(0, 0)) const;
 
 	sc2::Point2DI getNextCoordinateToWallWithBuilding(const sc2::UnitTypeID building_type) const;
 

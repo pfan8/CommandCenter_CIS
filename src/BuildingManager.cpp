@@ -102,7 +102,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 		// If the building does not yet have a worker assigned to it, go assign one. 
 		if (b.finalPosition != sc2::Point2DI{ 0,0 }) continue;
 
-		b.finalPosition = m_buildingPlacer.getBuildLocationForType(b.type.getAPIUnitType());
+		b.finalPosition = m_buildingPlacer.getBuildLocationForType(b.type.getAPIUnitType(), b.desiredPosition);
 
 		std::cout << "final_position:" << b.finalPosition.x << " + " << b.finalPosition.y << std::endl;
 
@@ -287,9 +287,12 @@ void BuildingManager::checkForCompletedBuildings()
             // if we are terran, give the worker back to worker manager
             if (Util::IsTerran(m_bot.GetPlayerRace(Players::Self)))
             {
+				if (Util::IsTownHallType(b.type.getAPIUnitType()))
+				{
+					m_bot.resetExpandState();
+				}
                 m_bot.Workers().finishedWithWorker(b.builderUnit);
             }
-
             // remove this unit from the under construction vector
             toRemove.push_back(b);
         }
@@ -374,10 +377,10 @@ void BuildingManager::drawBuildingInformation()
         {
             ss << "Assigned " << b.type.getName() << "    " << b.builderUnit.getID() << " " << getBuildingWorkerCode(b) << " (" << b.finalPosition.x << "," << b.finalPosition.y << ")\n";
 
-            int x1 = b.finalPosition.x;
-            int y1 = b.finalPosition.y;
-            int x2 = b.finalPosition.x + b.type.tileWidth();
-            int y2 = b.finalPosition.y + b.type.tileHeight();
+            int x1 = b.finalPosition.x - b.type.tileWidth() / 2;
+            int y1 = b.finalPosition.y - b.type.tileHeight() / 2;
+            int x2 = b.finalPosition.x + b.type.tileWidth() / 2;
+            int y2 = b.finalPosition.y + b.type.tileHeight() / 2;
 
             m_bot.Map().drawBox((CCPositionType)x1, (CCPositionType)y1, (CCPositionType)x2, (CCPositionType)y2, CCColor(255, 0, 0));
             //m_bot.Map().drawLine(b.finalPosition, m_bot.GetUnit(b.builderUnitTag)->pos, CCColors::Yellow);
